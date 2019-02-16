@@ -1,0 +1,12 @@
+CREATE OR REPLACE FUNCTION log_event() RETURNS trigger AS $$
+DECLARE
+BEGIN
+  -- OLD - состояние строки до изменения --
+  INSERT INTO logs (event_id, old_title, old_starts, old_ends)
+  VALUES (OLD.event_id, OLD.title, OLD.starts, OLD.ends);
+
+  RAISE NOTICE 'Someone just changed event #%', OLD.event_id;
+  -- NEW - состояние строки после изменения --
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
