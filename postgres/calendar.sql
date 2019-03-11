@@ -1,16 +1,19 @@
 CREATE OR REPLACE FUNCTION calendar()
-  RETURNS TABLE (
-    month double precision,
-    day double precision,
-    count bigint
-  ) AS $$
+RETURNS TABLE (
+  _title text,
+  _starts timestamp
+) AS $$
+DECLARE
+  target_month_number double precision := -1;
 BEGIN
-  RETURN QUERY
-  SELECT extract(month from starts) as month,
-    extract(day from starts) as day, count(*)
+  SELECT extract(month from starts) as month, count(*)
+    INTO target_month_number
     FROM events
-    GROUP BY month, day
+    GROUP BY month
     ORDER BY count DESC
     LIMIT 1;
+
+  RETURN QUERY
+    SELECT title, starts FROM events WHERE extract(month from starts) = target_month_number;
 END;
 $$  LANGUAGE plpgsql;
